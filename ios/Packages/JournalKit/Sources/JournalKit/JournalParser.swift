@@ -46,7 +46,7 @@ public enum JournalParser {
         close(at: lines.count)
 
         var checkboxes: [CheckboxLine] = []
-        var doneItems: [String] = []
+        var doneItems: [DoneItem] = []
         for section in sections {
             var i = section.bodyLines.lowerBound
             while i < section.bodyLines.upperBound {
@@ -61,8 +61,8 @@ public enum JournalParser {
                     i = j
                     continue
                 }
-                if section.kind == .done, line.hasPrefix("- ") {
-                    doneItems.append(String(line.dropFirst(2)).trimmingCharacters(in: .whitespaces))
+                if section.kind == .done, let item = DoneItem.parse(line, date: date, lineNumber: i) {
+                    doneItems.append(item)
                 }
                 i += 1
             }

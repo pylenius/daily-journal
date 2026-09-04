@@ -164,6 +164,26 @@ final class JournalStore {
         }
     }
 
+    func remove(_ item: DoneItem) async {
+        await edit(date: item.date, line: item.line, raw: item.raw, replacement: nil)
+    }
+
+    func toggleHighlight(_ item: DoneItem) async {
+        guard let replacement = LineEditor.highlightToggled(item.raw) else { return }
+        await edit(date: item.date, line: item.line, raw: item.raw, replacement: replacement)
+    }
+
+    private func edit(date: String, line: Int, raw: String, replacement: String?) async {
+        guard let io, let url = urls[date] else { return }
+        do {
+            let loaded = try await io.editLine(url, line: line, expectedRaw: raw, replacement: replacement)
+            apply(loaded, date: date, fileName: url.lastPathComponent)
+        } catch {
+            errorMessage = error.localizedDescription
+            await reload()
+        }
+    }
+
     /// Full-text save. Throws `JournalFileIO.IOError.changedSinceLoad` when the file moved on.
     func save(date: String, text: String, expectedHash: String?) async throws {
         guard let io, let url = urls[date] else { return }

@@ -15,10 +15,8 @@ struct EntryView: View {
                 List {
                     if !entry.doneItems.isEmpty {
                         Section("Done") {
-                            ForEach(Array(entry.doneItems.enumerated()), id: \.offset) { _, item in
-                                Label { Text(MarkdownRenderer.inline(item)).textSelection(.enabled) } icon: {
-                                    Image(systemName: "checkmark.seal.fill").foregroundStyle(.green)
-                                }
+                            ForEach(entry.doneItems) { item in
+                                DoneRow(item: item)
                             }
                         }
                     }

@@ -64,6 +64,10 @@ A checkbox line matches, anywhere in the file:
 - Readers toggle a checkbox by replacing exactly `[ ]` with `[x]` (or the reverse) on that one line. No other byte in the file changes. Readers never re-serialise Markdown when toggling.
 - Only checkbox lines inside `## Actions` and `## Carried over` count as **actions**. Checkbox lines elsewhere (e.g. in Details) are rendered and may be toggled, but they are not listed as open actions.
 
+## Done items
+
+Bullets under `## Done` are plain `- text` lines. A reader may **remove** such a line or **highlight** it by wrapping the text as `- **text**` (and unwrap it again); both are single-line edits that leave every other byte alone. The writer treats a highlighted line as an ordinary Done item.
+
 ## Action identity across days
 
 The writer copies still-open actions into the next day's `## Carried over` section. To show one item, not one per day, readers compute an **identity key**:

@@ -86,13 +86,19 @@ actor JournalFileIO {
 
     /// Flips one checkbox. Re-reads inside the coordinated block so a concurrent Mac write is never clobbered.
     func toggle(_ url: URL, line: Int, expectedRaw: String) throws -> Loaded {
+        guard let flipped = CheckboxToggler.flip(expectedRaw) else { throw IOError.lineNotFound }
+        return try editLine(url, line: line, expectedRaw: expectedRaw, replacement: flipped)
+    }
+
+    /// Replaces (or, with `nil`, deletes) one line, located by position or unique text. Every other byte is kept.
+    func editLine(_ url: URL, line: Int, expectedRaw: String, replacement: String?) throws -> Loaded {
         resolveConflicts(at: url)
         return try coordinatedWrite(url) { url in
             let data = try Data(contentsOf: url)
             let text = String(decoding: data, as: UTF8.self)
             let newText: String
             do {
-                newText = try CheckboxToggler.toggle(in: text, line: line, expectedRaw: expectedRaw)
+                newText = try LineEditor.replace(in: text, line: line, expectedRaw: expectedRaw, with: replacement)
             } catch {
                 throw IOError.lineNotFound
             }

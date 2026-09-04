@@ -109,11 +109,11 @@ public struct JournalEntry: Sendable, Hashable, Identifiable {
     public let newline: String
     public let sections: [Section]
     public let checkboxes: [CheckboxLine]
-    /// Plain bullet texts under `## Done`.
-    public let doneItems: [String]
+    /// Plain bullets under `## Done`.
+    public let doneItems: [DoneItem]
 
     public init(date: String, fileName: String, title: String, lines: [String], newline: String,
-                sections: [Section], checkboxes: [CheckboxLine], doneItems: [String]) {
+                sections: [Section], checkboxes: [CheckboxLine], doneItems: [DoneItem]) {
         self.date = date; self.fileName = fileName; self.title = title; self.lines = lines; self.newline = newline
         self.sections = sections; self.checkboxes = checkboxes; self.doneItems = doneItems
     }

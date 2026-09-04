@@ -67,7 +67,7 @@ struct DayRow: View {
             }
             .font(.caption)
             if let first = entry.doneItems.first {
-                Text(MarkdownRenderer.inline(first)).font(.subheadline).foregroundStyle(.secondary).lineLimit(2)
+                Text(MarkdownRenderer.inline(first.text)).font(.subheadline).foregroundStyle(.secondary).lineLimit(2)
             }
         }
         .padding(.vertical, 2)

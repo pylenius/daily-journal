@@ -12,17 +12,8 @@ public enum CheckboxToggler {
     /// The line is located at `line` if its content still equals `expectedRaw`; otherwise the first line
     /// equal to `expectedRaw` is used, provided it is unique. Returns the whole new file text.
     public static func toggle(in text: String, line: Int, expectedRaw: String) throws(Failure) -> String {
-        let newline = text.contains("\r\n") ? "\r\n" : "\n"
-        var lines = text.components(separatedBy: newline)
-        var index = line
-        if !(lines.indices.contains(index) && lines[index] == expectedRaw) {
-            let matches = lines.indices.filter { lines[$0] == expectedRaw }
-            guard matches.count == 1 else { throw .lineNotFound }
-            index = matches[0]
-        }
-        guard let flipped = flip(lines[index]) else { throw .notACheckbox }
-        lines[index] = flipped
-        return lines.joined(separator: newline)
+        guard let flipped = flip(expectedRaw) else { throw .notACheckbox }
+        return try LineEditor.replace(in: text, line: line, expectedRaw: expectedRaw, with: flipped)
     }
 
     /// The single line with its box flipped, or nil if it is not a checkbox line.

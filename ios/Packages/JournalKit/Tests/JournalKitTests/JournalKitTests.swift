@@ -20,6 +20,9 @@ func fixture(_ name: String) throws -> String {
         #expect(e.title == "Journal — 2026-09-03 (Thursday)")
         #expect(e.sections.map(\.kind) == [.done, .actions, .carriedOver, .details])
         #expect(e.doneItems.count == 3)
+        #expect(e.doneItems[1].text.hasPrefix("Re-authentication now uses"))
+        #expect(e.doneItems[1].line == 4)
+        #expect(e.doneItems[1].isHighlighted == false)
         #expect(e.actions.count == 6)
         #expect(e.checkboxes.count == 7, "the stray checkbox in Details is parsed but is not an action")
         #expect(e.openActionCount == 6)
@@ -177,5 +180,25 @@ func fixture(_ name: String) throws -> String {
         let new = ConflictResolver.Version(modified: Date(timeIntervalSince1970: 200), text: "## Actions\n- [ ] a\n- [ ] b\n- [ ] c\n")
         #expect(ConflictResolver.merge([old, new]) == "## Actions\n- [x] a\n- [ ] b\n- [ ] c\n")
         #expect(ConflictResolver.merge([new]) == new.text)
+    }
+}
+
+@Suite struct LineEditorTests {
+    @Test func deleteAndHighlight() throws {
+        let text = "## Done\n- one\n- **two**\n- three\n"
+        let e = JournalParser.parse(text, fileName: "2026-01-03.md")
+        #expect(e.doneItems.map(\.text) == ["one", "two", "three"])
+        #expect(e.doneItems[1].isHighlighted)
+        let deleted = try LineEditor.replace(in: text, line: e.doneItems[0].line, expectedRaw: e.doneItems[0].raw, with: nil)
+        #expect(deleted == "## Done\n- **two**\n- three\n")
+        let hi = try #require(LineEditor.highlightToggled("- three"))
+        #expect(hi == "- **three**")
+        #expect(LineEditor.highlightToggled("  - **two**") == "  - two")
+        #expect(LineEditor.highlightToggled("- [ ] not a done item") == nil)
+        let out = try LineEditor.replace(in: text, line: 3, expectedRaw: "- three", with: hi)
+        #expect(out == "## Done\n- one\n- **two**\n- **three**\n")
+        #expect(throws: LineEditor.Failure.lineNotFound) {
+            try LineEditor.replace(in: text, line: 9, expectedRaw: "- gone", with: nil)
+        }
     }
 }
