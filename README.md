@@ -18,13 +18,21 @@ Both sides follow the same file contract, `spec/JOURNAL_FORMAT.md`.
 
 ## Install
 
-Either add the plugin:
+This repository is its own Claude Code plugin marketplace. In Claude Code:
 
-```bash
-claude plugin add /path/to/daily-journal/plugin
+```
+/plugin marketplace add pylenius/daily-journal
+/plugin install daily-journal@pylenius
 ```
 
-or copy the skill into a project or your home directory:
+or from the shell:
+
+```bash
+claude plugin marketplace add pylenius/daily-journal
+claude plugin install daily-journal@pylenius
+```
+
+Alternatively copy the skill into a project or your home directory:
 
 ```bash
 cp -R plugin/skills/daily-journal ~/.claude/skills/daily-journal

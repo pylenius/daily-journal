@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "pylenius",
+  "description": "Plugins by Pekka Ylenius",
+  "owner": { "name": "Pekka Ylenius" },
+  "plugins": [
+    {
+      "name": "daily-journal",
+      "source": "./plugin",
+      "description": "Write a private daily work journal (done list, actions with sources, details) from git commits, Claude Code transcripts, Google Calendar/Gmail/Docs, Slack and phone captures. Carries open actions forward day to day.",
+      "author": { "name": "Pekka Ylenius" },
+      "category": "productivity",
+      "homepage": "https://github.com/pylenius/daily-journal",
+      "keywords": ["journal", "daily-log", "actions", "productivity"]
+    }
+  ]
+}
