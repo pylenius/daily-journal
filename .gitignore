@@ -1,0 +1,15 @@
+# Xcode / SwiftPM
+*.xcodeproj
+*.xcworkspace
+xcuserdata/
+.build/
+.swiftpm/
+DerivedData/
+*.xcuserstate
+# Python
+__pycache__/
+*.pyc
+# OS
+.DS_Store
+# local
+*.local.json
