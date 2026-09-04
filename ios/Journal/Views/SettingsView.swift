@@ -24,7 +24,7 @@ struct SettingsView: View {
                 Section("About") {
                     Text("Journal reads the Markdown files written by the daily-journal Claude Code plugin. Ticking a box edits the file in place; captures land in the inbox folder for the next run.")
                         .font(.footnote).foregroundStyle(.secondary)
-                    Link("Source code and format spec", destination: URL(string: "https://github.com/pekkay/daily-journal")!)
+                    Link("Source code and format spec", destination: URL(string: "https://github.com/pylenius/daily-journal")!)
                     LabeledContent("Version", value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")
                 }
             }

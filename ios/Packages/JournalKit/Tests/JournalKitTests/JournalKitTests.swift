@@ -27,7 +27,7 @@ func fixture(_ name: String) throws -> String {
         #expect(e.checkboxes.count == 7, "the stray checkbox in Details is parsed but is not an action")
         #expect(e.openActionCount == 6)
         let first = e.actions[0]
-        #expect(first.text == "Reply to Anton in #commercial-team with the outcome of the partner tech call")
+        #expect(first.text == "Reply to Alex in #sales-team with the outcome of the partner tech call")
         #expect(first.referenceKind == .source)
         #expect(first.urls.count == 1)
         #expect(first.urls[0].host == "example.slack.com")
@@ -50,8 +50,8 @@ func fixture(_ name: String) throws -> String {
     }
 
     @Test func identityKeyNormalisation() {
-        #expect(CheckboxLine.identityKey(for: "  Reply to  Anton.  (from 2026-09-03) ") == "reply to anton")
-        #expect(CheckboxLine.identityKey(for: "Reply to Anton") == CheckboxLine.identityKey(for: "reply to anton;"))
+        #expect(CheckboxLine.identityKey(for: "  Reply to  Alex.  (from 2026-09-03) ") == "reply to alex")
+        #expect(CheckboxLine.identityKey(for: "Reply to Alex") == CheckboxLine.identityKey(for: "reply to alex;"))
     }
 
     @Test func toleratesOddContent() {
@@ -121,10 +121,10 @@ func fixture(_ name: String) throws -> String {
         let all = OpenActionsAggregator.aggregate([d3, d4])
         // 6 actions on day 3, day 4 adds 1 new and repeats 5 → 7 distinct keys
         #expect(all.count == 7)
-        let anton = try #require(all.first { $0.key.hasPrefix("reply to anton") })
-        #expect(anton.isOpen == false)
-        #expect(anton.latest.date == "2026-09-04")
-        #expect(anton.seenOn == ["2026-09-03", "2026-09-04"])
+        let alex = try #require(all.first { $0.key.hasPrefix("reply to alex") })
+        #expect(alex.isOpen == false)
+        #expect(alex.latest.date == "2026-09-04")
+        #expect(alex.seenOn == ["2026-09-03", "2026-09-04"])
         let open = OpenActionsAggregator.openActions([d3, d4])
         #expect(open.count == 6)
         #expect(open.allSatisfy { $0.latest.date == "2026-09-04" || $0.key.hasPrefix("verify the discounts") })
@@ -139,14 +139,14 @@ func fixture(_ name: String) throws -> String {
         let d4 = JournalParser.parse(try fixture("2026-09-04"), fileName: "2026-09-04.md")
         let idx = SearchIndex(entries: [d3, d4])
         #expect(idx.search("").isEmpty)
-        let anton = idx.search("ANTON")
-        #expect(anton.count == 5)
-        #expect(anton[0].date == "2026-09-04")
-        #expect(idx.search("anton outcome").count == 3)
-        #expect(idx.search("anton nothing-here").isEmpty)
+        let alex = idx.search("ALEX")
+        #expect(alex.count == 5)
+        #expect(alex[0].date == "2026-09-04")
+        #expect(idx.search("alex outcome").count == 3)
+        #expect(idx.search("alex nothing-here").isEmpty)
         #expect(idx.search("pickup").allSatisfy { $0.lineText.contains("pickup") })
-        #expect(idx.search("elay").count == 1)
-        #expect(idx.search("Élay").count == 1)
+        #expect(idx.search("dana").count == 1)
+        #expect(idx.search("Dána").count == 1)
     }
 }
 
@@ -156,13 +156,13 @@ func fixture(_ name: String) throws -> String {
         var comps = DateComponents(); comps.year = 2026; comps.month = 9; comps.day = 4; comps.hour = 9; comps.minute = 12; comps.second = 33
         var cal = Calendar(identifier: .gregorian); cal.timeZone = tz
         let now = cal.date(from: comps)!
-        let (name, contents) = InboxWriter.makeCapture(kind: .action, body: "  Call Stian about the release\n", device: "iPhone", now: now, timeZone: tz, random: { 0xbeef })
+        let (name, contents) = InboxWriter.makeCapture(kind: .action, body: "  Call Noor about the release\n", device: "iPhone", now: now, timeZone: tz, random: { 0xbeef })
         #expect(name == "2026-09-04-091233-beef.md")
-        #expect(contents == "kind: action\ncreated: 2026-09-04T09:12:33+03:00\ndevice: iPhone\n\nCall Stian about the release\n")
+        #expect(contents == "kind: action\ncreated: 2026-09-04T09:12:33+03:00\ndevice: iPhone\n\nCall Noor about the release\n")
         let parsed = InboxParser.parse(fileName: name, contents: contents)
         #expect(parsed.kind == .action)
         #expect(parsed.device == "iPhone")
-        #expect(parsed.body == "Call Stian about the release")
+        #expect(parsed.body == "Call Noor about the release")
         #expect(parsed.created == now)
     }
 
