@@ -1,0 +1,10 @@
+{
+  "name": "daily-journal",
+  "version": "0.1.0",
+  "description": "Write a private daily work journal (done list, actions with sources, details) from git commits, Claude Code transcripts, Google Calendar/Gmail/Docs, Slack and phone captures. Carries open actions forward day to day.",
+  "author": {
+    "name": "Pekka Ylenius"
+  },
+  "license": "MIT",
+  "keywords": ["journal", "daily-log", "actions", "productivity", "gws", "slack"]
+}

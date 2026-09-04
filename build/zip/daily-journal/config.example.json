@@ -1,0 +1,27 @@
+{
+  "journal_dir": "~/Library/Mobile Documents/com~apple~CloudDocs/Journal",
+  "timezone": "Europe/Helsinki",
+  "me": {
+    "name": "Your Name",
+    "email": "you@example.com"
+  },
+  "git": {
+    "roots": ["~/Coding/myOGO"],
+    "depth": 1,
+    "author": "Your Name"
+  },
+  "claude": {
+    "projects_dir": "~/.claude/projects",
+    "project_filter": []
+  },
+  "google": {
+    "enabled": true,
+    "calendar_id": "primary",
+    "gmail_exclude_categories": ["promotions", "updates", "social", "forums"],
+    "gmail_noise_senders": ["noreply", "no-reply", "notifications@", "calendar-notification", "gemini-notes@"]
+  },
+  "slack": {
+    "enabled": true,
+    "handle": "yourhandle"
+  }
+}
