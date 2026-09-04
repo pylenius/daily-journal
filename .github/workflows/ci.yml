@@ -1,0 +1,30 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  plugin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: python3 -m py_compile plugin/skills/daily-journal/scripts/*.py
+      - run: bash -n plugin/skills/daily-journal/scripts/open-actions.sh
+  ios:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.0.app || sudo xcode-select -s "$(ls -d /Applications/Xcode*.app | sort -V | tail -1)"
+      - name: JournalKit tests
+        run: swift test --package-path ios/Packages/JournalKit
+      - name: Generate project
+        run: brew install xcodegen && cd ios && cp Signing.xcconfig.example Signing.xcconfig && xcodegen generate
+      - name: Build app (simulator, unsigned)
+        run: |
+          cd ios
+          xcodebuild -project Journal.xcodeproj -scheme Journal \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO build | tail -20
