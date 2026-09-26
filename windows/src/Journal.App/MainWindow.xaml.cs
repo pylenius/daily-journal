@@ -38,13 +38,14 @@ public sealed partial class MainWindow : Window
     [System.Runtime.InteropServices.DllImport("user32.dll")]
     static extern uint GetDpiForWindow(IntPtr hwnd);
 
-    /// <summary>AppWindow sizes are in physical pixels; scale from effective pixels so the window fits at any display scale.</summary>
+    /// <summary>AppWindow sizes are in physical pixels; scale from effective pixels so the window fits at any display scale, centred on screen.</summary>
     public static void ResizeScaled(Window window, int width, int height)
     {
         var scale = GetDpiForWindow(WinRT.Interop.WindowNative.GetWindowHandle(window)) / 96.0;
         var area = DisplayArea.GetFromWindowId(window.AppWindow.Id, DisplayAreaFallback.Nearest).WorkArea;
-        window.AppWindow.Resize(new Windows.Graphics.SizeInt32(
-            Math.Min((int)(width * scale), area.Width), Math.Min((int)(height * scale), area.Height)));
+        var w = Math.Min((int)(width * scale), area.Width);
+        var h = Math.Min((int)(height * scale), area.Height);
+        window.AppWindow.MoveAndResize(new Windows.Graphics.RectInt32(area.X + (area.Width - w) / 2, area.Y + (area.Height - h) / 2, w, h));
     }
 
     void OnStoreChanged()

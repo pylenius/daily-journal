@@ -1,0 +1,37 @@
+name: Release Windows app
+# Push a tag like `windows-v0.1.0` to build the installer and portable zips and attach them to a GitHub Release.
+on:
+  push:
+    tags: ["windows-v*"]
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: "10.0.x" }
+      - name: JournalCore tests
+        run: dotnet test windows/tests/JournalCore.Tests
+      - name: Build installer and zips
+        shell: pwsh
+        run: windows/installer/build-installer.ps1 -Version ('${{ github.ref_name }}'.Replace('windows-v', ''))
+      - name: Publish release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version = "${{ github.ref_name }}".Replace('windows-v', '')
+          $notes = @"
+          **Journal for Windows $version** — the daily-journal reader for Windows 10 and 11.
+
+          - **Journal-Setup-$version.exe** — installer for x64 and ARM64 PCs. Installs for the current user (no admin rights), adds a Start menu entry and an uninstaller.
+          - **Journal-$version-win-x64.zip** / **-win-arm64.zip** — portable copies: unzip anywhere and run ``Journal.exe``.
+
+          The app is not code-signed yet, so Windows SmartScreen may say "Windows protected your PC" the first time: choose **More info → Run anyway**.
+
+          On first launch, pick the journal folder (for example ``%USERPROFILE%\iCloudDrive\Journal`` with iCloud for Windows, or a OneDrive folder).
+          "@
+          $files = Get-ChildItem windows/out/* -Include *.exe, *.zip | ForEach-Object FullName
+          gh release create "${{ github.ref_name }}" @files --title "Journal for Windows $version" --notes $notes

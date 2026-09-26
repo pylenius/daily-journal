@@ -182,6 +182,10 @@ The format logic is a C# port of JournalKit in `windows/src/JournalCore` (plain 
 dotnet test windows/tests/JournalCore.Tests          # any OS
 ```
 
+**Installing.** Download `Journal-Setup-<version>.exe` from the [Releases](https://github.com/pylenius/daily-journal/releases) page and run it. One installer covers x64 and ARM64 PCs; it installs for the current user (no admin rights) with a Start menu entry and an uninstaller. Portable zips are attached too. The builds are not code-signed yet, so SmartScreen may show "Windows protected your PC" the first time: **More info → Run anyway**.
+
+Releases are built by CI: push a tag `windows-v<version>` (e.g. `windows-v0.1.0`) and the workflow publishes the installer and zips. To build them locally on Windows, install Inno Setup (`winget install JRSoftware.InnoSetup`) and run `windows\installer\build-installer.ps1`; the files land in `windows\out\`.
+
 The app itself builds on Windows only (.NET 10 SDK; Visual Studio is not required):
 
 ```powershell

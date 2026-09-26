@@ -1,0 +1,2 @@
+# Test fixtures are journal entries: keep them byte-exact (LF) on every OS, or Windows checkouts turn them into CRLF.
+ios/Packages/JournalKit/Tests/JournalKitTests/Fixtures/*.md text eol=lf
