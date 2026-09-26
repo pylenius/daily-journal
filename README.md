@@ -7,6 +7,7 @@ A private daily work journal, written for you by Claude Code. Once a day you run
 - **`plugin/`** — a Claude Code plugin with the `daily-journal` skill and its collector scripts. This is the writer: it runs on the Mac that has your repos, transcripts and `gws` login.
 - **`ios/`** — an iOS app that reads the same folder from iCloud Drive: shows today's entry, lets you tick actions, and drops quick captures into `inbox/` that the next journal run folds in. See below.
 - **`mac/`** — the same app for macOS, reading the journal folder directly. It shares the file, store and rendering code with `ios/`.
+- **`windows/`** — the same app for Windows 10/11 (WinUI 3, .NET), for a folder synced by iCloud for Windows, OneDrive or Google Drive.
 
 Both sides follow the same file contract, `spec/JOURNAL_FORMAT.md`.
 
@@ -166,6 +167,30 @@ open JournalMac.xcodeproj
 ```
 
 Release builds are sandboxed and remember the folder with a security-scoped bookmark. Debug builds run unsandboxed, so the launch arguments `-journalFolder /path/to/folder` and `-openDate YYYY-MM-DD` work there as they do on the simulator.
+
+## Windows app
+
+`windows/` holds **Journal** for Windows 10 and 11, x64 and ARM64. It is a WinUI 3 app on .NET 10 with the same features: **Days** (month-grouped list with the entry beside it), **Actions**, **Search**, **Inbox**, **Quick capture** and a raw **Edit** window with the same stale-file guard. Tick the box to toggle an action; right-click a Done item (or use its **…** button) to highlight or remove it. Ticking, highlighting and removing are single-line edits, exactly as on iOS.
+
+Shortcuts: Ctrl+N quick capture · F5 / Ctrl+R reload · Ctrl+F search · Ctrl+S save in the editor.
+
+Pick the journal folder once; it is remembered in `%LOCALAPPDATA%\DailyJournal\settings.json`. Any sync client that shows the folder on disk works: iCloud for Windows (`%USERPROFILE%\iCloudDrive\Journal`), OneDrive, Google Drive for desktop. Cloud-only files are downloaded on first read, and the folder is watched, so changes from the Mac appear on their own. Sync clients write conflicts as separately named copies (`2026-09-03-DESKTOP.md`), which the format's file-name rule ignores. Captures are written with `device: Windows`.
+
+The format logic is a C# port of JournalKit in `windows/src/JournalCore` (plain .NET, no Windows dependency) with the same tests over the same fixtures:
+
+```bash
+dotnet test windows/tests/JournalCore.Tests          # any OS
+```
+
+The app itself builds on Windows only (.NET 10 SDK; Visual Studio is not required):
+
+```powershell
+dotnet build windows\src\Journal.App                                   # Debug, for this machine's architecture
+dotnet publish windows\src\Journal.App -c Release -r win-x64 -o out    # or win-arm64
+out\Journal.exe
+```
+
+The published folder is self-contained (.NET and the Windows App SDK included, about 240 MB), so it runs from a zip without an installer or signing. `--journalFolder <path>` and `--openDate YYYY-MM-DD` skip the picker, as on the other platforms. CI builds both architectures and uploads them as artifacts.
 
 Android is planned as a separate app over the same files; the format is fully described in `spec/JOURNAL_FORMAT.md`.
 

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="Journal.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Journal">
+    <Window.SystemBackdrop>
+        <MicaBackdrop />
+    </Window.SystemBackdrop>
+
+    <Grid x:Name="Root">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.KeyboardAccelerators>
+            <KeyboardAccelerator Key="N" Modifiers="Control" Invoked="OnCaptureAccelerator" />
+            <KeyboardAccelerator Key="F5" Invoked="OnReloadAccelerator" />
+            <KeyboardAccelerator Key="R" Modifiers="Control" Invoked="OnReloadAccelerator" />
+            <KeyboardAccelerator Key="F" Modifiers="Control" Invoked="OnSearchAccelerator" />
+        </Grid.KeyboardAccelerators>
+
+        <!-- Title bar: the window content extends into it. -->
+        <Grid x:Name="AppTitleBar" Padding="16,0,0,0" ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Image x:Name="TitleIcon" Width="18" Height="18" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="1" Text="Journal" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" />
+            <TextBlock x:Name="TitleFolder" Grid.Column="2" VerticalAlignment="Center" Opacity="0.6" Style="{StaticResource CaptionTextBlockStyle}" />
+        </Grid>
+
+        <Grid x:Name="WelcomePanel" Grid.Row="1" Visibility="Collapsed">
+            <StackPanel MaxWidth="520" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="16">
+                <FontIcon x:Name="WelcomeIcon" Glyph="&#xE8F4;" FontSize="48" HorizontalAlignment="Center" />
+                <TextBlock x:Name="WelcomeTitle" Text="Choose your journal folder" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" TextAlignment="Center" />
+                <TextBlock x:Name="WelcomeText" TextWrapping="Wrap" TextAlignment="Center" Opacity="0.8" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="8">
+                    <Button x:Name="RetryButton" Content="Retry" Click="OnRetry" />
+                    <Button Content="Choose folder…" Style="{StaticResource AccentButtonStyle}" Click="OnChooseFolder" />
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+
+        <NavigationView
+            x:Name="Nav"
+            Grid.Row="1"
+            IsBackButtonVisible="Collapsed"
+            IsSettingsVisible="True"
+            PaneDisplayMode="Left"
+            OpenPaneLength="200"
+            IsPaneOpen="True"
+            SelectionChanged="OnNavSelectionChanged">
+            <NavigationView.MenuItems>
+                <NavigationViewItem Content="Days" Tag="days" x:Name="DaysItem">
+                    <NavigationViewItem.Icon><FontIcon Glyph="&#xE787;" /></NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="Actions" Tag="actions">
+                    <NavigationViewItem.Icon><FontIcon Glyph="&#xE9D5;" /></NavigationViewItem.Icon>
+                    <NavigationViewItem.InfoBadge><InfoBadge x:Name="ActionsBadge" Visibility="Collapsed" /></NavigationViewItem.InfoBadge>
+                </NavigationViewItem>
+                <NavigationViewItem Content="Search" Tag="search" x:Name="SearchItem">
+                    <NavigationViewItem.Icon><FontIcon Glyph="&#xE721;" /></NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="Inbox" Tag="inbox">
+                    <NavigationViewItem.Icon><FontIcon Glyph="&#xE719;" /></NavigationViewItem.Icon>
+                    <NavigationViewItem.InfoBadge><InfoBadge x:Name="InboxBadge" Visibility="Collapsed" /></NavigationViewItem.InfoBadge>
+                </NavigationViewItem>
+            </NavigationView.MenuItems>
+            <NavigationView.PaneFooter>
+                <StackPanel Padding="4,0,4,8" Spacing="4">
+                    <Button HorizontalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" Click="OnCapture" ToolTipService.ToolTip="Quick capture (Ctrl+N)" AutomationProperties.Name="Quick capture">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon Glyph="&#xE710;" FontSize="14" />
+                            <TextBlock Text="Quick capture" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </NavigationView.PaneFooter>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <InfoBar x:Name="ErrorBar" Severity="Error" Title="Something went wrong" IsOpen="False" Margin="16,8,16,0" />
+                <ContentControl x:Name="ContentHost" Grid.Row="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+                <ProgressRing x:Name="LoadingRing" Grid.Row="1" IsActive="False" Width="20" Height="20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="16" />
+            </Grid>
+        </NavigationView>
+    </Grid>
+</Window>
