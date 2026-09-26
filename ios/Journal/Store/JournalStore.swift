@@ -32,10 +32,10 @@ final class JournalStore {
     private var accessedURL: URL?
 
     init() {
-        // Debug/simulator convenience: `-journalFolder /path` skips the picker.
+        // Debug/simulator convenience: `-journalFolder /path` skips the picker and leaves the saved bookmark alone.
         let args = ProcessInfo.processInfo.arguments
         if let i = args.firstIndex(of: "-journalFolder"), i + 1 < args.count {
-            chooseFolder(URL(fileURLWithPath: args[i + 1], isDirectory: true))
+            activate(URL(fileURLWithPath: args[i + 1], isDirectory: true))
         } else {
             restore()
         }
@@ -212,7 +212,7 @@ final class JournalStore {
         #if os(iOS)
         return UIDevice.current.model
         #else
-        return "Mac"
+        return Host.current().localizedName ?? "Mac"
         #endif
     }
 }

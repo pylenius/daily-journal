@@ -1,0 +1,4 @@
+// Copy to Signing.xcconfig (git-ignored) and fill in your own values.
+// DEVELOPMENT_TEAM: your Apple team id (Xcode > Settings > Accounts), or leave empty to sign to run locally.
+DEVELOPMENT_TEAM =
+JOURNAL_BUNDLE_ID = io.github.daily-journal.journal.mac

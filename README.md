@@ -6,6 +6,7 @@ A private daily work journal, written for you by Claude Code. Once a day you run
 
 - **`plugin/`** — a Claude Code plugin with the `daily-journal` skill and its collector scripts. This is the writer: it runs on the Mac that has your repos, transcripts and `gws` login.
 - **`ios/`** — an iOS app that reads the same folder from iCloud Drive: shows today's entry, lets you tick actions, and drops quick captures into `inbox/` that the next journal run folds in. See below.
+- **`mac/`** — the same app for macOS, reading the journal folder directly. It shares the file, store and rendering code with `ios/`.
 
 Both sides follow the same file contract, `spec/JOURNAL_FORMAT.md`.
 
@@ -148,6 +149,23 @@ open Journal.xcodeproj
 ```
 
 Run on the simulator or your device from Xcode. The parser and file logic live in the `ios/Packages/JournalKit` Swift package, which has no UI dependency and is tested with `swift test --package-path ios/Packages/JournalKit`. For UI work on the simulator, launch arguments `-journalFolder /path/to/folder` and `-openDate YYYY-MM-DD` skip the picker.
+
+## Mac app
+
+`mac/` holds **Journal** for macOS 15+. It works on the same folder as the iOS app, with the same features, in a three-column window: Days / Actions / Inbox in the sidebar, the list in the middle, the entry on the right. Search is the sidebar field; right-click a Done item to highlight or remove it, or an action to tick it or copy its reference.
+
+Shortcuts: ⇧⌘N quick capture · ⌘T today · ⌘E edit entry · ⌘R reload · ⇧⌘O choose folder · ⌘, settings.
+
+The Mac project has no copies of its own for the shared parts. It compiles `ios/Journal/Storage`, `Store`, `Rendering`, `Intents` and the row views directly, and uses `ios/Packages/JournalKit`. Only the window and views are Mac-specific.
+
+```bash
+cd mac
+cp Signing.xcconfig.example Signing.xcconfig   # add your DEVELOPMENT_TEAM and a bundle id
+./bootstrap.sh                                  # generates JournalMac.xcodeproj (git-ignored)
+open JournalMac.xcodeproj
+```
+
+Release builds are sandboxed and remember the folder with a security-scoped bookmark. Debug builds run unsandboxed, so the launch arguments `-journalFolder /path/to/folder` and `-openDate YYYY-MM-DD` work there as they do on the simulator.
 
 Android is planned as a separate app over the same files; the format is fully described in `spec/JOURNAL_FORMAT.md`.
 

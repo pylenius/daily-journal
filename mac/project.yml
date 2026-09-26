@@ -1,0 +1,88 @@
+name: JournalMac
+options:
+  bundleIdPrefix: io.github.daily-journal
+  deploymentTarget:
+    macOS: "15.0"
+  createIntermediateGroups: true
+  xcodeVersion: "26.0"
+packages:
+  JournalKit:
+    path: ../ios/Packages/JournalKit
+  Markdown:
+    url: https://github.com/apple/swift-markdown
+    from: 0.8.0
+configFiles:
+  Debug: Signing.xcconfig
+  Release: Signing.xcconfig
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    MACOSX_DEPLOYMENT_TARGET: "15.0"
+targets:
+  Journal:
+    type: application
+    platform: macOS
+    sources:
+      - path: Journal
+      # Shared with the iOS app: file I/O, store, Markdown rendering, Shortcuts intent and row views.
+      - path: ../ios/Journal/Storage
+        group: Shared
+      - path: ../ios/Journal/Store
+        group: Shared
+      - path: ../ios/Journal/Rendering
+        group: Shared
+      - path: ../ios/Journal/Intents
+        group: Shared
+      - path: ../ios/Journal/Views/ActionRow.swift
+        group: Shared
+      - path: ../ios/Journal/Views/DoneRow.swift
+        group: Shared
+      - path: ../ios/Journal/Views/DayRow.swift
+        group: Shared
+    dependencies:
+      - package: JournalKit
+      - package: Markdown
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(JOURNAL_BUNDLE_ID)
+        PRODUCT_NAME: Journal
+        CODE_SIGN_STYLE: Automatic
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Journal
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.productivity
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        ENABLE_USER_SCRIPT_SANDBOXING: YES
+        ENABLE_HARDENED_RUNTIME: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+      configs:
+        # Debug runs unsandboxed so `-journalFolder /path` works without the folder picker.
+        Debug:
+          CODE_SIGN_ENTITLEMENTS: Journal/Journal-Debug.entitlements
+        Release:
+          CODE_SIGN_ENTITLEMENTS: Journal/Journal.entitlements
+  JournalTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: ../ios/JournalTests
+        group: Shared
+    dependencies:
+      - target: Journal
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  Journal:
+    build:
+      targets:
+        Journal: all
+        JournalTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - JournalTests

@@ -21,7 +21,7 @@ struct SearchView: View {
                                 Text(hit.date).font(.caption.weight(.semibold)).foregroundStyle(Color.accentColor)
                                 Text(hit.section.title).font(.caption).foregroundStyle(.secondary)
                             }
-                            Text(highlighted(hit.lineText)).font(.subheadline).lineLimit(4)
+                            Text(MarkdownRenderer.highlighted(hit.lineText, query: query)).font(.subheadline).lineLimit(4)
                         }
                     }
                 }
@@ -35,19 +35,5 @@ struct SearchView: View {
             guard !Task.isCancelled else { return }
             hits = store.index.search(query)
         }
-    }
-
-    private func highlighted(_ line: String) -> AttributedString {
-        var text = AttributedString(line.trimmingCharacters(in: .whitespaces))
-        for term in SearchIndex.terms(query) {
-            var searchStart = text.startIndex
-            while searchStart < text.endIndex,
-                  let r = text[searchStart...].range(of: term, options: [.caseInsensitive, .diacriticInsensitive]) {
-                text[r].backgroundColor = .yellow.opacity(0.4)
-                text[r].inlinePresentationIntent = .stronglyEmphasized
-                searchStart = r.upperBound
-            }
-        }
-        return text
     }
 }

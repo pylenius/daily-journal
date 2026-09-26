@@ -1,7 +1,7 @@
 import Foundation
 
 /// Fires `onChange` when anything in the journal folder changes: file presenter for local/provider changes,
-/// metadata query for iCloud folders granted through the document picker.
+/// metadata query for iCloud folders granted through the document picker (iOS only; on the Mac the folder is a real path).
 final class FolderWatcher: NSObject, NSFilePresenter, @unchecked Sendable {
     let presentedItemURL: URL?
     let presentedItemOperationQueue = OperationQueue()
@@ -15,7 +15,9 @@ final class FolderWatcher: NSObject, NSFilePresenter, @unchecked Sendable {
         super.init()
         presentedItemOperationQueue.maxConcurrentOperationCount = 1
         NSFileCoordinator.addFilePresenter(self)
+        #if os(iOS)
         Task { @MainActor in self.startMetadataQuery() }
+        #endif
     }
 
     deinit {

@@ -15,3 +15,4 @@ __pycache__/
 *.local.json
 Signing.xcconfig
 ios/build/
+mac/build/
