@@ -22,3 +22,4 @@ obj/
 .vs/
 *.user
 windows/out/
+mac/out/

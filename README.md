@@ -166,6 +166,10 @@ cp Signing.xcconfig.example Signing.xcconfig   # add your DEVELOPMENT_TEAM and a
 open JournalMac.xcodeproj
 ```
 
+**Installing.** Download `Journal-<version>.dmg` from the [Releases](https://github.com/pylenius/daily-journal/releases) page, open it and drag Journal to Applications. Release builds are signed with Developer ID and notarized, so they open without warnings.
+
+**Making a release.** `mac/release.sh` archives, signs with Developer ID, builds the DMG, notarizes and staples it into `mac/out/`; `--publish` also attaches it to a GitHub Release tagged `mac-v<version>`. One-time setup: a *Developer ID Application* certificate (Xcode → Settings → Accounts → Manage Certificates → +), notarization credentials stored with `xcrun notarytool store-credentials daily-journal-notary --apple-id <you> --team-id <TEAMID>`, and your team id as `DEVELOPMENT_TEAM` in `Signing.xcconfig`.
+
 Release builds are sandboxed and remember the folder with a security-scoped bookmark. Debug builds run unsandboxed, so the launch arguments `-journalFolder /path/to/folder` and `-openDate YYYY-MM-DD` work there as they do on the simulator.
 
 ## Windows app
