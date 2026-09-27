@@ -220,7 +220,21 @@ adb install app/build/outputs/apk/debug/app-debug.apk
 
 Or open `android/` in Android Studio. Debug builds install as `io.github.dailyjournal.journal.debug`, next to a release build, and accept `-e journalFolder <path>` (a directory the app can read, e.g. under its own `files/`) and `-e openDate YYYY-MM-DD` on `adb shell am start`, to skip the picker as on the other platforms. CI runs the tests, builds both variants and uploads the debug APK as an artifact.
 
-**Release builds** are minified (about 3 MB). They are signed when `JOURNAL_KEYSTORE`, `JOURNAL_KEYSTORE_PASSWORD`, `JOURNAL_KEY_ALIAS` and `JOURNAL_KEY_PASSWORD` are set; otherwise `./gradlew :app:assembleRelease` produces an unsigned APK. `-PversionName=… -PversionCode=…` set the version.
+**Installing.** Download `Journal-<version>.apk` from the [Releases](https://github.com/pylenius/daily-journal/releases) page on the phone and open it; Android asks once to allow installing apps from your browser or file manager. Later releases install over it as updates.
+
+**Making a release.** Push a tag `android-v<version>` (e.g. `android-v0.1.0`) and the workflow builds a signed, minified APK (about 3 MB) and attaches it to a GitHub Release. The version code is derived from the tag (`1.2.3` → 10203), so keep minor and patch below 100. One-time setup: create an upload key and store it as repository secrets.
+
+```bash
+keytool -genkeypair -keystore journal-release.jks -alias journal -keyalg RSA -keysize 4096 -validity 10000
+base64 -i journal-release.jks | gh secret set ANDROID_KEYSTORE_BASE64
+gh secret set ANDROID_KEYSTORE_PASSWORD      # the store password you chose
+gh secret set ANDROID_KEY_ALIAS --body journal
+gh secret set ANDROID_KEY_PASSWORD           # the key password (same as the store password unless you chose another)
+```
+
+Keep `journal-release.jks` and its passwords somewhere safe outside the repository (`*.jks` is git-ignored). Android only installs an update signed with the same key, so losing it means uninstalling and reinstalling the app.
+
+To build a signed APK locally, set `JOURNAL_KEYSTORE` (path), `JOURNAL_KEYSTORE_PASSWORD`, `JOURNAL_KEY_ALIAS` and `JOURNAL_KEY_PASSWORD` and run `./gradlew :app:assembleRelease -PversionName=0.1.0 -PversionCode=100`. Without them the release APK is unsigned.
 
 ## License
 
