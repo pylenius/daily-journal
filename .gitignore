@@ -30,5 +30,6 @@ android/build/
 android/*/build/
 android/local.properties
 android/out/
+android/signing/
 *.keystore
 *.jks

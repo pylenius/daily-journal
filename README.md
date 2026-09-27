@@ -232,9 +232,9 @@ gh secret set ANDROID_KEY_ALIAS --body journal
 gh secret set ANDROID_KEY_PASSWORD           # the key password (same as the store password unless you chose another)
 ```
 
-Keep `journal-release.jks` and its passwords somewhere safe outside the repository (`*.jks` is git-ignored). Android only installs an update signed with the same key, so losing it means uninstalling and reinstalling the app.
+Keep the key in `android/signing/`, which is git-ignored, next to a `signing.env` that exports the four `JOURNAL_*` variables below, and back that folder up somewhere safe outside the repository. Android only installs an update signed with the same key, so losing it means uninstalling and reinstalling the app.
 
-To build a signed APK locally, set `JOURNAL_KEYSTORE` (path), `JOURNAL_KEYSTORE_PASSWORD`, `JOURNAL_KEY_ALIAS` and `JOURNAL_KEY_PASSWORD` and run `./gradlew :app:assembleRelease -PversionName=0.1.0 -PversionCode=100`. Without them the release APK is unsigned.
+To build a signed APK locally, set `JOURNAL_KEYSTORE` (path), `JOURNAL_KEYSTORE_PASSWORD`, `JOURNAL_KEY_ALIAS` and `JOURNAL_KEY_PASSWORD` (`source signing/signing.env`) and run `./gradlew :app:assembleRelease -PversionName=0.1.0 -PversionCode=100`. Without them the release APK is unsigned.
 
 ## License
 
