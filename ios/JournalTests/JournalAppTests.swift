@@ -1,3 +1,5 @@
+import Foundation
+import JournalKit
 import Testing
 @testable import Journal
 
@@ -17,5 +19,26 @@ import Testing
         #expect(items[1].sourceLine == 2)
         #expect(items[2].checked == true)
         #expect(items[2].sourceLine == 3)
+    }
+}
+
+@Suite struct SampleJournalTests {
+    @Test func sampleIsAValidJournalWithCarryOver() throws {
+        let folder = try SampleJournal.create()
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let files = try FileManager.default.contentsOfDirectory(atPath: folder.path).filter { JournalParser.date(fromFileName: $0) != nil }.sorted()
+        #expect(files.count == 3)
+        let entries = try files.map { name in
+            JournalParser.parse(try String(contentsOf: folder.appendingPathComponent(name), encoding: .utf8), fileName: name)
+        }
+        #expect(entries.allSatisfy { !$0.doneItems.isEmpty && !$0.actions.isEmpty })
+        // Newest copy wins: the price list was sent on the last day, the UK reply is still open.
+        let open = OpenActionsAggregator.openActions(entries)
+        #expect(open.contains { $0.key.hasPrefix("reply to chris") })
+        #expect(!open.contains { $0.key.hasPrefix("send dana") })
+        #expect(!open.contains { $0.key.hasPrefix("review robin") })
+        #expect(open.count == 4)
+        let inbox = try FileManager.default.contentsOfDirectory(atPath: folder.appendingPathComponent("inbox").path)
+        #expect(inbox.count == 1)
     }
 }

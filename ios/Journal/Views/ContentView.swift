@@ -8,6 +8,16 @@ struct ContentView: View {
     @State private var showSettings = false
     @State private var showPicker = false
     @State private var dayPath: [String] = []
+    @State private var tab = ContentView.initialTab
+
+    enum AppTab: String, Hashable { case days, actions, search, inbox }
+
+    /// Simulator convenience: `-tab actions` opens on that tab (used for the App Store screenshots).
+    private static var initialTab: AppTab {
+        let args = ProcessInfo.processInfo.arguments
+        guard let i = args.firstIndex(of: "-tab"), i + 1 < args.count else { return .days }
+        return AppTab(rawValue: args[i + 1]) ?? .days
+    }
 
     var body: some View {
         Group {
@@ -43,18 +53,18 @@ struct ContentView: View {
     }
 
     private var mainTabs: some View {
-        TabView {
-            Tab("Days", systemImage: "calendar") {
+        TabView(selection: $tab) {
+            Tab("Days", systemImage: "calendar", value: AppTab.days) {
                 NavigationStack(path: $dayPath) { DayListView(path: $dayPath).toolbar { toolbar } }
             }
-            Tab("Actions", systemImage: "checklist") {
+            Tab("Actions", systemImage: "checklist", value: AppTab.actions) {
                 NavigationStack { OpenActionsView().toolbar { toolbar } }
             }
             .badge(store.openActions.count)
-            Tab("Search", systemImage: "magnifyingglass", role: .search) {
+            Tab("Search", systemImage: "magnifyingglass", value: AppTab.search, role: .search) {
                 NavigationStack { SearchView().toolbar { toolbar } }
             }
-            Tab("Inbox", systemImage: "tray") {
+            Tab("Inbox", systemImage: "tray", value: AppTab.inbox) {
                 NavigationStack { InboxView().toolbar { toolbar } }
             }
             .badge(store.inbox.count)
@@ -75,15 +85,17 @@ struct ContentView: View {
 }
 
 struct WelcomeView: View {
+    @Environment(JournalStore.self) private var store
     @Binding var showPicker: Bool
 
     var body: some View {
         ContentUnavailableView {
             Label("Choose your journal folder", systemImage: "folder.badge.plus")
         } description: {
-            Text("Pick the folder where your daily journal files (YYYY-MM-DD.md) are written — for example the Journal folder in iCloud Drive. The app reads and updates those files in place.")
+            Text("Pick the folder where your daily journal files (YYYY-MM-DD.md) are written — for example the Journal folder in iCloud Drive. The app reads and updates those files in place.\n\nNo journal yet? Try the sample to see how it works.")
         } actions: {
             Button("Choose folder…") { showPicker = true }.buttonStyle(.borderedProminent)
+            Button("Try with a sample journal") { store.useSampleJournal() }
         }
     }
 }

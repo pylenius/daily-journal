@@ -32,10 +32,13 @@ final class JournalStore {
     private var accessedURL: URL?
 
     init() {
-        // Debug/simulator convenience: `-journalFolder /path` skips the picker and leaves the saved bookmark alone.
+        // Simulator convenience: `-journalFolder /path` skips the picker and leaves the saved bookmark alone;
+        // `-sampleJournal` opens a fresh sample journal (used for the App Store screenshots).
         let args = ProcessInfo.processInfo.arguments
         if let i = args.firstIndex(of: "-journalFolder"), i + 1 < args.count {
             activate(URL(fileURLWithPath: args[i + 1], isDirectory: true))
+        } else if args.contains("-sampleJournal") {
+            useSampleJournal()
         } else {
             restore()
         }
@@ -62,6 +65,20 @@ final class JournalStore {
         bookmarkIsStale = false
         restore()
     }
+
+    /// Writes the made-up sample journal into the app's Documents and opens it like a picked folder.
+    func useSampleJournal() {
+        do {
+            let url = try SampleJournal.create()
+            try FolderAccess.save(url)
+            bookmarkIsStale = false
+            restore()
+        } catch {
+            errorMessage = "Could not create the sample journal: \(error.localizedDescription)"
+        }
+    }
+
+    var isSampleJournal: Bool { folderName == SampleJournal.folderName }
 
     func forgetFolder() {
         accessedURL?.stopAccessingSecurityScopedResource()

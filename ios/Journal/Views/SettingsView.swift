@@ -17,9 +17,16 @@ struct SettingsView: View {
                     if store.bookmarkIsStale {
                         Label("Access to the folder is stale — choose it again.", systemImage: "exclamationmark.triangle").foregroundStyle(.orange)
                     }
+                    if store.isSampleJournal {
+                        Label("This is the made-up sample journal. Choose your own folder to use the app for real.", systemImage: "info.circle")
+                            .font(.footnote).foregroundStyle(.secondary)
+                    }
                     Button("Choose another folder…") { dismiss(); showPicker = true }
                     Button("Reload now") { Task { await store.reload() } }
                     Button("Forget folder", role: .destructive) { store.forgetFolder(); dismiss() }
+                    if !store.isSampleJournal {
+                        Button("Open the sample journal") { store.useSampleJournal(); dismiss() }
+                    }
                 }
                 Section("About") {
                     Text("Journal reads the Markdown files written by the daily-journal Claude Code plugin. Ticking a box edits the file in place; captures land in the inbox folder for the next run.")
