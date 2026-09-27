@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- docs/icon/icon.svg without the shadow, scaled into the adaptive-icon safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="1024" android:viewportHeight="1024">
+    <group android:pivotX="552" android:pivotY="514" android:scaleX="0.64" android:scaleY="0.64"
+        android:translateX="-40" android:translateY="-2">
+        <!-- page -->
+        <path android:pathData="M288,176H736A56,56 0 0 1 792,232V792A56,56 0 0 1 736,848H288A56,56 0 0 1 232,792V232A56,56 0 0 1 288,176Z">
+            <aapt:attr name="android:fillColor">
+                <gradient android:type="linear" android:startX="0" android:startY="176" android:endX="0" android:endY="848"
+                    android:startColor="#FFFFFF" android:endColor="#EAF0FB" />
+            </aapt:attr>
+        </path>
+        <!-- date tab -->
+        <path android:fillColor="#1E4BC0" android:pathData="M288,176H736A56,56 0 0 1 792,232V296H232V232A56,56 0 0 1 288,176Z" />
+        <path android:fillColor="#0F2E7A" android:pathData="M322,176a30,30 0 1 0 60,0a30,30 0 1 0 -60,0ZM642,176a30,30 0 1 0 60,0a30,30 0 1 0 -60,0Z" />
+        <path android:fillColor="#D9E3F7" android:pathData="M332,140A20,20 0 0 1 372,140V212A20,20 0 0 1 332,212ZM652,140A20,20 0 0 1 692,140V212A20,20 0 0 1 652,212Z" />
+        <!-- done lines -->
+        <path android:strokeColor="#7A8DB5" android:strokeWidth="26" android:strokeLineCap="round"
+            android:pathData="M410,392H712M410,500H660M410,608H700M410,716H600" />
+        <!-- ticked boxes -->
+        <path android:fillColor="#2B5BD7" android:pathData="M288,392a42,42 0 1 0 84,0a42,42 0 1 0 -84,0ZM288,500a42,42 0 1 0 84,0a42,42 0 1 0 -84,0Z" />
+        <path android:strokeColor="#FFFFFF" android:strokeWidth="16" android:strokeLineCap="round" android:strokeLineJoin="round"
+            android:pathData="M310,394l14,14l28,-32M310,502l14,14l28,-32" />
+        <!-- open boxes -->
+        <path android:strokeColor="#9FB0D6" android:strokeWidth="18"
+            android:pathData="M296,608a34,34 0 1 0 68,0a34,34 0 1 0 -68,0ZM296,716a34,34 0 1 0 68,0a34,34 0 1 0 -68,0Z" />
+        <!-- accent: big check badge -->
+        <path android:fillColor="#34C759" android:strokeColor="#FFFFFF" android:strokeWidth="26"
+            android:pathData="M624,778a118,118 0 1 0 236,0a118,118 0 1 0 -236,0Z" />
+        <path android:strokeColor="#FFFFFF" android:strokeWidth="34" android:strokeLineCap="round" android:strokeLineJoin="round"
+            android:pathData="M686,780l40,40l78,-88" />
+    </group>
+</vector>

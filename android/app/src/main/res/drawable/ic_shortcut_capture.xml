@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Material "add" on the icon's blue, for the launcher shortcut. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp" android:height="48dp"
+    android:viewportWidth="48" android:viewportHeight="48">
+    <path android:fillColor="#2B5BD7" android:pathData="M0,24a24,24 0 1 0 48,0a24,24 0 1 0 -48,0Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M22,14h4v8h8v4h-8v8h-4v-8h-8v-4h8z" />
+</vector>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Themed icon (Android 13+): the page with its lines and tab cut out, and the check badge. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="1024" android:viewportHeight="1024">
+    <group android:pivotX="552" android:pivotY="514" android:scaleX="0.64" android:scaleY="0.64"
+        android:translateX="-40" android:translateY="-2">
+        <path android:fillColor="#FFFFFF" android:fillType="evenOdd"
+            android:pathData="M288,176H736A56,56 0 0 1 792,232V792A56,56 0 0 1 736,848H288A56,56 0 0 1 232,792V232A56,56 0 0 1 288,176Z
+                M232,296H792V310H232Z
+                M410,379H712A13,13 0 0 1 712,405H410A13,13 0 0 1 410,379Z
+                M410,487H660A13,13 0 0 1 660,513H410A13,13 0 0 1 410,487Z
+                M410,595H700A13,13 0 0 1 700,621H410A13,13 0 0 1 410,595Z
+                M410,703H600A13,13 0 0 1 600,729H410A13,13 0 0 1 410,703Z
+                M296,392a34,34 0 1 0 68,0a34,34 0 1 0 -68,0Z
+                M296,500a34,34 0 1 0 68,0a34,34 0 1 0 -68,0Z
+                M296,608a34,34 0 1 0 68,0a34,34 0 1 0 -68,0Z
+                M296,716a34,34 0 1 0 68,0a34,34 0 1 0 -68,0Z" />
+    </group>
+</vector>

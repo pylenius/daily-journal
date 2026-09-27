@@ -1,6 +1,6 @@
 # Journal file format
 
-This is the contract between the writer (the Claude Code plugin on a Mac) and the readers (the iOS, Mac and Windows apps, later Android). Both sides must follow it; anything not described here is free-form Markdown that readers pass through untouched.
+This is the contract between the writer (the Claude Code plugin on a Mac) and the readers (the iOS, Mac, Windows and Android apps). Both sides must follow it; anything not described here is free-form Markdown that readers pass through untouched.
 
 ## Folder layout
 

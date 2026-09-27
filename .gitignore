@@ -23,3 +23,12 @@ obj/
 *.user
 windows/out/
 mac/out/
+# Android (android/)
+android/.gradle/
+android/.kotlin/
+android/build/
+android/*/build/
+android/local.properties
+android/out/
+*.keystore
+*.jks

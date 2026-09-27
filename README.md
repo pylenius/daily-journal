@@ -8,6 +8,7 @@ A private daily work journal, written for you by Claude Code. Once a day you run
 - **`ios/`** — an iOS app that reads the same folder from iCloud Drive: shows today's entry, lets you tick actions, and drops quick captures into `inbox/` that the next journal run folds in. See below.
 - **`mac/`** — the same app for macOS, reading the journal folder directly. It shares the file, store and rendering code with `ios/`.
 - **`windows/`** — the same app for Windows 10/11 (WinUI 3, .NET), for a folder synced by iCloud for Windows, OneDrive or Google Drive.
+- **`android/`** — the same app for Android 10+ (Kotlin, Jetpack Compose), for a folder a sync app keeps on the phone.
 
 Both sides follow the same file contract, `spec/JOURNAL_FORMAT.md`.
 
@@ -200,7 +201,26 @@ out\Journal.exe
 
 The published folder is self-contained (.NET and the Windows App SDK included, about 240 MB), so it runs from a zip without an installer or signing. `--journalFolder <path>` and `--openDate YYYY-MM-DD` skip the picker, as on the other platforms. CI builds both architectures and uploads them as artifacts.
 
-Android is planned as a separate app over the same files; the format is fully described in `spec/JOURNAL_FORMAT.md`.
+## Android app
+
+`android/` holds **Journal** for Android 10 and newer, phones and tablets. It is a Kotlin / Jetpack Compose app with the same features: **Days**, **Actions**, **Search** and **Inbox** tabs, the entry view (tick the box to toggle an action; long-press a Done item to highlight, copy or remove it, or an action to copy its reference or open its links), the raw **Edit** screen with the same stale-file guard, and quick capture from the **+** button. Two Android extras: **Share → Add to Journal** from any app turns the shared text into a capture, and long-pressing the launcher icon offers **New capture**. Ticking, highlighting and removing are single-line edits, as everywhere else. Captures are written with `device: Android`.
+
+**The folder.** Android has no iCloud Drive, and the Google Drive and OneDrive apps do not hand out their folders to other apps as a folder. The journal folder has to be a real folder on the phone that a sync app keeps up to date with the Mac, for example [Syncthing](https://syncthing.net) (Mac ↔ phone directly, no cloud) or FolderSync / Autosync for Google Drive, OneDrive or Dropbox. On first launch, choose that folder in the system folder picker. The app keeps the permission and reads and writes the files in place through the Storage Access Framework. It never uploads anything itself.
+
+Android cannot watch a folder through the Storage Access Framework, so the app checks it for changes when it comes to the front and every 15 seconds while open (a cheap listing; files are read only when something changed). Pull down to reload. The Storage Access Framework cannot rename one file over another, so an edit re-reads the file and then rewrites it in place; sync conflicts come back as separately named copies, which the format's file-name rule ignores.
+
+The format logic is a Kotlin port of JournalKit in `android/journalcore` (plain JVM, no Android dependency) with the same tests over the same fixtures:
+
+```bash
+cd android
+./gradlew :journalcore:test                 # any OS with JDK 17+
+./gradlew :app:assembleDebug                # needs the Android SDK (ANDROID_HOME)
+adb install app/build/outputs/apk/debug/app-debug.apk
+```
+
+Or open `android/` in Android Studio. Debug builds install as `io.github.dailyjournal.journal.debug`, next to a release build, and accept `-e journalFolder <path>` (a directory the app can read, e.g. under its own `files/`) and `-e openDate YYYY-MM-DD` on `adb shell am start`, to skip the picker as on the other platforms. CI runs the tests, builds both variants and uploads the debug APK as an artifact.
+
+**Release builds** are minified (about 3 MB). They are signed when `JOURNAL_KEYSTORE`, `JOURNAL_KEYSTORE_PASSWORD`, `JOURNAL_KEY_ALIAS` and `JOURNAL_KEY_PASSWORD` are set; otherwise `./gradlew :app:assembleRelease` produces an unsigned APK. `-PversionName=… -PversionCode=…` set the version.
 
 ## License
 
