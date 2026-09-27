@@ -222,13 +222,12 @@ Or open `android/` in Android Studio. Debug builds install as `io.github.dailyjo
 
 **Installing.** Download `Journal-<version>.apk` from the [Releases](https://github.com/pylenius/daily-journal/releases) page on the phone and open it; Android asks once to allow installing apps from your browser or file manager. Later releases install over it as updates.
 
-**Making a release.** Push a tag `android-v<version>` (e.g. `android-v0.1.0`) and the workflow builds a signed, minified APK (about 3 MB) and attaches it to a GitHub Release. The version code is derived from the tag (`1.2.3` → 10203), so keep minor and patch below 100. One-time setup: create an upload key and store it as repository secrets.
+**Making a release.** Push a tag `android-v<version>` (e.g. `android-v0.1.0`) and the workflow builds a signed, minified APK (about 3 MB) and attaches it to a GitHub Release. The version code is derived from the tag (`1.2.3` → 10203), so keep minor and patch below 100. One-time setup: create an upload key and store it as repository secrets. Use the alias `journal`, which the workflow expects.
 
 ```bash
 keytool -genkeypair -keystore journal-release.jks -alias journal -keyalg RSA -keysize 4096 -validity 10000
 base64 -i journal-release.jks | gh secret set ANDROID_KEYSTORE_BASE64
 gh secret set ANDROID_KEYSTORE_PASSWORD      # the store password you chose
-gh secret set ANDROID_KEY_ALIAS --body journal
 gh secret set ANDROID_KEY_PASSWORD           # the key password (same as the store password unless you chose another)
 ```
 
