@@ -78,6 +78,10 @@ The writer copies still-open actions into the next day's `## Carried over` secti
 
 Items with the same key are the same action. **The newest file's copy wins**: its checked state is the state, and toggling it writes to that newest file. The writer, when it reads yesterday's `## Actions` and `## Carried over`, treats any `[x]` as done and does not carry it forward.
 
+## Removing an action
+
+To remove an action that is not a real task (a test capture, a duplicate), a reader or the writer deletes **every** checkbox line with that identity key, together with its continuation lines, from `## Actions` and `## Carried over` in **all** entries. Each deletion removes whole lines and leaves every other byte alone. Deleting only the newest copy is not enough: the next-newest copy would win and the action would reappear. Removal is the one edit that touches older entries; toggling always writes to the newest.
+
 ## Inbox captures
 
 One file per capture, written by the phone:
