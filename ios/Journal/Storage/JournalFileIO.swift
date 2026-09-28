@@ -109,6 +109,19 @@ actor JournalFileIO {
         }
     }
 
+    /// Deletes every copy of an action in this file (spec "Removing an action"). Nil when the file holds none.
+    func removeAction(_ url: URL, identityKey: String) throws -> Loaded? {
+        resolveConflicts(at: url)
+        return try coordinatedWrite(url) { url in
+            let text = String(decoding: try Data(contentsOf: url), as: UTF8.self)
+            guard let newText = ActionRemover.removing(identityKey: identityKey, from: text, fileName: url.lastPathComponent) else { return nil }
+            let out = Data(newText.utf8)
+            try out.write(to: url, options: .atomic)
+            let modified = try? url.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate
+            return Loaded(text: newText, modified: modified, hash: JournalFileIO.hash(out))
+        }
+    }
+
     /// Replaces the whole file. When `expectedHash` is given and the file no longer matches it, nothing is written.
     func write(_ url: URL, text: String, expectedHash: String?) throws -> Loaded {
         resolveConflicts(at: url)

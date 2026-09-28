@@ -181,6 +181,31 @@ final class JournalStore {
         }
     }
 
+    /// Removes an action from every entry that holds it (spec "Removing an action").
+    func removeAction(_ cb: CheckboxLine) async {
+        guard let io else { return }
+        let key = cb.identityKey
+        for entry in entries where entry.checkboxes.contains(where: { $0.section.holdsActions && $0.identityKey == key }) {
+            guard let url = urls[entry.date] else { continue }
+            do {
+                if let loaded = try await io.removeAction(url, identityKey: key) {
+                    apply(loaded, date: entry.date, fileName: url.lastPathComponent)
+                }
+            } catch {
+                errorMessage = error.localizedDescription
+                await reload()
+                return
+            }
+        }
+    }
+
+    /// The action as plain text, ready to paste into a chat and keep working on it.
+    func plainText(_ cb: CheckboxLine) -> String {
+        let seenOn = entries.filter { $0.checkboxes.contains { $0.section.holdsActions && $0.identityKey == cb.identityKey } }
+            .map(\.date).sorted()
+        return ActionExport.plainText(cb, seenOn: seenOn, filePath: urls[cb.date]?.path)
+    }
+
     func remove(_ item: DoneItem) async {
         await edit(date: item.date, line: item.line, raw: item.raw, replacement: nil)
     }

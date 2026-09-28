@@ -6,6 +6,10 @@ struct ActionRow: View {
     @Environment(JournalStore.self) private var store
     let item: CheckboxLine
     var subtitle: String? = nil
+    #if os(macOS)
+    @State private var hovering = false
+    @State private var copied = false
+    #endif
 
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
@@ -36,7 +40,33 @@ struct ActionRow: View {
                     Text(subtitle).font(.caption2).foregroundStyle(.tertiary)
                 }
             }
+            #if os(macOS)
+            Spacer(minLength: 0)
+            copyButton
+            #endif
         }
         .padding(.vertical, 2)
+        #if os(macOS)
+        .onHover { hovering = $0 }
+        #endif
     }
+
+    #if os(macOS)
+    /// Copies the task as plain text to paste into a chat. Shown while the pointer is over the row.
+    private var copyButton: some View {
+        Button {
+            NSPasteboard.general.clearContents()
+            NSPasteboard.general.setString(store.plainText(item), forType: .string)
+            copied = true
+            Task { try? await Task.sleep(for: .seconds(1.5)); copied = false }
+        } label: {
+            Image(systemName: copied ? "checkmark" : "doc.on.doc")
+                .foregroundStyle(.secondary)
+        }
+        .buttonStyle(.borderless)
+        .help("Copy as task")
+        .accessibilityLabel("Copy as task")
+        .opacity(hovering || copied ? 1 : 0)
+    }
+    #endif
 }

@@ -202,3 +202,66 @@ func fixture(_ name: String) throws -> String {
         }
     }
 }
+
+@Suite struct ActionEditingTests {
+    static let day1 = """
+    # Journal — 2026-09-27 (Sunday)
+
+    ## Done
+    - Something
+
+    ## Actions
+    - [ ] Just test this — source: iPhone
+    - [ ] Real task — source: mail 123
+
+    ## Details
+    - [ ] Just test this
+    """
+
+    static let day2 = """
+    # Journal — 2026-09-28 (Monday)
+
+    ## Actions
+    - [ ] New thing
+
+    ## Carried over
+    - [x] just  test this. (from 2026-09-27) — done: ticked
+      O-1234: In progress
+    - [ ] Real task (from 2026-09-27) — source: mail 123
+    """
+
+    @Test func removesEveryCopyWithContinuation() throws {
+        let key = CheckboxLine.identityKey(for: "Just test this")
+        let out1 = try #require(ActionRemover.removing(identityKey: key, from: Self.day1, fileName: "2026-09-27.md"))
+        #expect(!out1.contains("- [ ] Just test this — source"))
+        #expect(out1.contains("- [ ] Real task — source: mail 123"))
+        #expect(out1.contains("## Details\n- [ ] Just test this"), "checkboxes outside the action sections stay")
+        let out2 = try #require(ActionRemover.removing(identityKey: key, from: Self.day2, fileName: "2026-09-28.md"))
+        #expect(out2 == Self.day2.replacingOccurrences(of: "- [x] just  test this. (from 2026-09-27) — done: ticked\n  O-1234: In progress\n", with: ""))
+        #expect(ActionRemover.removing(identityKey: "nothing like it", from: Self.day2, fileName: "2026-09-28.md") == nil)
+    }
+
+    @Test func keepsCRLF() throws {
+        let text = Self.day2.replacingOccurrences(of: "\n", with: "\r\n")
+        let out = try #require(ActionRemover.removing(identityKey: "new thing", from: text, fileName: "2026-09-28.md"))
+        #expect(out == text.replacingOccurrences(of: "- [ ] New thing\r\n", with: ""))
+    }
+
+    @Test func plainText() throws {
+        let e = JournalParser.parse(Self.day2, fileName: "2026-09-28.md")
+        let real = try #require(e.actions.first { $0.text.hasPrefix("Real task") })
+        #expect(ActionExport.plainText(real, seenOn: ["2026-09-27", "2026-09-28"], filePath: "/j/2026-09-28.md") == """
+        Journal task (open, since 2026-09-27, carried 2 days; latest entry 2026-09-28)
+        - [ ] Real task (from 2026-09-27) — source: mail 123
+        File: /j/2026-09-28.md:9
+        """)
+        let ticked = try #require(e.actions.first { $0.isChecked })
+        #expect(ActionExport.plainText(ticked) == """
+        Journal task (done, since 2026-09-27; latest entry 2026-09-28)
+        - [x] just  test this. (from 2026-09-27) — done: ticked
+          O-1234: In progress
+        """)
+        let fresh = try #require(e.actions.first { $0.text == "New thing" })
+        #expect(ActionExport.plainText(fresh) == "Journal task (open; latest entry 2026-09-28)\n- [ ] New thing")
+    }
+}

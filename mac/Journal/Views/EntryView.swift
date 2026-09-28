@@ -90,6 +90,7 @@ struct ActionMenu: View {
 
     var body: some View {
         Button(item.isChecked ? "Mark Open" : "Mark Done") { Task { await store.toggle(item) } }
+        Button("Copy as Task") { copy(store.plainText(item)) }
         Button("Copy Text") { copy(item.text) }
         if let reference = item.reference, !reference.isEmpty {
             Button("Copy Reference") { copy(reference) }
@@ -97,6 +98,23 @@ struct ActionMenu: View {
         ForEach(item.urls, id: \.self) { url in
             Link("Open \(url.host() ?? url.absoluteString)", destination: url)
         }
+        if item.section.holdsActions {
+            Divider()
+            Button("Remove Task…", role: .destructive) { confirmRemove() }
+        }
+    }
+
+    /// Removal deletes the task from every day, so it asks first.
+    private func confirmRemove() {
+        let alert = NSAlert()
+        alert.messageText = "Remove this task from every day?"
+        alert.informativeText = "“\(item.text)” is deleted from Actions and Carried over in all entries. Use Mark Done for a task you finished."
+        alert.alertStyle = .warning
+        alert.addButton(withTitle: "Remove")
+        alert.addButton(withTitle: "Cancel")
+        alert.buttons.first?.hasDestructiveAction = true
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+        Task { await store.removeAction(item) }
     }
 
     private func copy(_ s: String) {
